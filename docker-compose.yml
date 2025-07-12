@@ -1,0 +1,59 @@
+services:
+  backend:
+    build:
+      context: ./wbparser
+      dockerfile: Dockerfile
+    container_name: wb-backend
+    restart: unless-stopped
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - .env
+    networks:
+      - wb-network
+    volumes:
+      - ./wbparser:/app/www/wbparser
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: wb-frontend
+    restart: unless-stopped
+    networks:
+      - wb-network
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: wb-postgres
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-wbparser}
+      - POSTGRES_USER=${POSTGRES_USER:-wbuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-wbpass}
+    networks:
+      - wb-network
+    ports:
+      - "5432:5432"
+
+
+networks:
+  wb-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
