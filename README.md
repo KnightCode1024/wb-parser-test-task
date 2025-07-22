@@ -48,7 +48,7 @@ Wildberries Парсер — это полнофункциональное ве�
 ### Технологический стек
 - **Frontend**: React 18, Chart.js, CSS3
 - **Backend**: Django 5.2, Django REST Framework
-- **Database**: PostgreSQL 15
+- **Database**: PostgreSQL 17
 - **Containerization**: Docker & Docker Compose
 
 ## 🚀 Быстрый старт
